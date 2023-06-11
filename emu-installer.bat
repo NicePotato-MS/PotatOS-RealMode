@@ -1,0 +1,1 @@
+qemu-system-i386 -m 1M -drive file=qemu/HDD.img,index=0,media=disk,format=raw -drive file=images/snoopos.flp,index=0,if=floppy,format=raw -soundhw pcspk
