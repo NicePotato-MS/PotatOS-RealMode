@@ -13,6 +13,7 @@ os_set_cursor_pos               equ 000Ch
 os_clear_screen                 equ 0012h
 os_draw_box                     equ 000Fh
 os_change_palette_color         equ 0015h
+os_reset_palette                equ 0033h
 
 ; Disk
 
@@ -24,7 +25,6 @@ os_file_exists                  equ 0027h
 os_create_file                  equ 002Ah
 os_remove_file                  equ 002Dh
 os_rename_file                  equ 0030h
-os_get_file_size                equ 0033h
 
 ; String
 

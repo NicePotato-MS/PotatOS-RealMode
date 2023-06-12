@@ -27,7 +27,7 @@ jmp os_file_exists              ;0027h
 jmp os_create_file              ;002Ah
 jmp os_remove_file              ;002Dh
 jmp os_rename_file              ;0030h
-jmp os_get_file_size            ;0033h
+jmp os_reset_palette            ;0033h
 jmp os_printc                   ;0036h
 jmp os_string_length            ;0039h
 jmp os_string_uppercase         ;003Ch
@@ -49,6 +49,7 @@ jmp os_long_uint_to_string      ;006Fh
 jmp os_find_char_in_string      ;0072h
 
 os_start:
+    ; Setup stack
     cli
     mov ax, 0
     mov ss, ax
@@ -95,25 +96,21 @@ no_change:
 
 	mov dh, 1       ; row
 	mov dl, 0       ; column
-	
     mov si, snoopos_msg_0
     call os_printc
 
 	mov dh, 15       ; row
 	mov dl, 28       ; column
-	
     mov si, snoopos_msg
     call os_printc
 
     mov dh, 24       ; row
 	mov dl, 0       ; column
-	
     mov si, potato_credit
     call os_printc
 
     mov dh, 19 ; row
     mov dl, 29 ; column
-    
     mov si, enter_message
     call os_printc
 
@@ -122,20 +119,23 @@ no_change:
     call os_file_exists
     jc no_autoexec
 
+    ; Found it, now load it
     mov dh, 19 ; row
     mov dl, 29 ; column
-    
     mov si, load_message
     call os_printc
 
-    jmp $
+    mov cx, autoexec_load_addr
+    call os_load_file
+
+    ; Jump to it now, buh bye!
+    jmp autoexec_load_addr
 
 no_autoexec:
     ; Hang forever because I am too lazy to implement proper error handling
 
     mov dh, 19
     mov dl, 27
-    
     mov si, error_no_auto
     call os_printc
 
