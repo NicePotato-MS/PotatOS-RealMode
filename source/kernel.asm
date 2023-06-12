@@ -4,13 +4,14 @@ CPU 386
 %DEFINE SNOOPOS_VERSION '0.1.00'
 %DEFINE API_VERSION 1
 
-disk_buffer	equ	24576
+disk_buffer	equ	0x6000
+autoexec_load_addr equ 0x5000
 
 ; another thanks to MikeOS for some of this
 
 
 jmp os_start                    ;0000h
-jmp os_print_string             ;0003h
+jmp os_print                    ;0003h
 jmp os_cursor_off               ;0006h
 jmp os_cursor_on                ;0009h
 jmp os_set_cursor_pos           ;000Ch
@@ -27,9 +28,25 @@ jmp os_create_file              ;002Ah
 jmp os_remove_file              ;002Dh
 jmp os_rename_file              ;0030h
 jmp os_get_file_size            ;0033h
-
-
-
+jmp os_printc                   ;0036h
+jmp os_string_length            ;0039h
+jmp os_string_uppercase         ;003Ch
+jmp os_string_lowercase         ;003Fh
+jmp os_string_reverse           ;0042h
+jmp os_string_charchange        ;0045h
+jmp os_string_copy              ;0048h
+jmp os_string_join              ;004Bh
+jmp os_string_trim              ;004Eh
+jmp os_string_strip             ;0051h
+jmp os_string_compare           ;0054h
+jmp os_string_truncate          ;0057h
+jmp os_string_strincmp          ;0060h
+jmp os_string_parse             ;0063h
+jmp os_string_to_uint           ;0066h
+jmp os_uint_to_string           ;0069h
+jmp os_sint_to_string           ;006Ch
+jmp os_long_uint_to_string      ;006Fh
+jmp os_find_char_in_string      ;0072h
 
 os_start:
     cli
@@ -67,53 +84,60 @@ no_change:
 
 	call os_cursor_off
 	
-    mov al, 0x05	;color
-	mov bl, 56	;red
-	mov bh, 19	;green
+    mov bx, 0x05	;color
+	mov dh, 56	;red
+	mov ch, 19	;green
 	mov cl, 63	;blue
-	;call os_change_palette_color
+	call os_change_palette_color
 
     mov bh, 0x5f ; Background color
 	call os_clear_screen
 
-    ;mov bl, 0x5f
 	mov dh, 1       ; row
 	mov dl, 0       ; column
-	call os_set_cursor_pos
+	
     mov si, snoopos_msg_0
-    call os_print_string
+    call os_printc
 
 	mov dh, 15       ; row
 	mov dl, 28       ; column
-	call os_set_cursor_pos
+	
     mov si, snoopos_msg
-    call os_print_string
+    call os_printc
 
     mov dh, 24       ; row
 	mov dl, 0       ; column
-	call os_set_cursor_pos
+	
     mov si, potato_credit
-    call os_print_string
+    call os_printc
 
     mov dh, 19 ; row
     mov dl, 29 ; column
-    call os_set_cursor_pos
+    
     mov si, enter_message
-    call os_print_string
+    call os_printc
 
     ; Search for AUTOEXEC.BIN
-    mov ax, autorun_bin_name
+    mov ax, autoexec_bin_name
     call os_file_exists
     jc no_autoexec
+
+    mov dh, 19 ; row
+    mov dl, 29 ; column
+    
+    mov si, load_message
+    call os_printc
+
+    jmp $
 
 no_autoexec:
     ; Hang forever because I am too lazy to implement proper error handling
 
     mov dh, 19
     mov dl, 27
-    call os_set_cursor_pos
+    
     mov si, error_no_auto
-    call os_print_string
+    call os_printc
 
     jmp $
 	
@@ -121,27 +145,29 @@ no_autoexec:
 
 
 
-snoopos_msg_0: db "                                                       ,----..              ",13,10
-snoopos_msg_1: db "    .--.--.                                           /   /   \   .--.--.   ",13,10
-snoopos_msg_2: db "   /  /    '.                             ,-.----.   /   .     : /  /    '. ",13,10
-snoopos_msg_3: db "  |  :  /`. /      ,---,   ,---.    ,---. \    /  \ .   /   :.  |  :  /`. / ",13,10
-snoopos_msg_4: db "  :  |  |--`   ,-+-. /  | '   ,'\  '   ,'\|   :    .   :   /  ` :  |  |--`  ",13,10
-snoopos_msg_5: db "  |  :  :_    ,--.'|'   |/   /   |/   /   |   | .\ :   |  : \ : |  :  :_    ",13,10
-snoopos_msg_6: db "   \  \    `.|   |  ,'' .   : ,. .   : ,. .   : |: |   :  | : | '\  \    `. ",13,10
-snoopos_msg_7: db "    `----.   |   | /  | '   | |: '   | |: |   |  \ .   |  ' ' ' : `----.   \",13,10
-snoopos_msg_8: db "    __ \  \  |   | |  | '   | .: '   | .: |   : .  '   :  \: /  | __ \  \  |",13,10
-snoopos_msg_9: db "   /  /`--'  |   | |  |/|   :    |   :    :     |`-'\   \  ',  / /  /`--'  /",13,10
-snoopos_msg_a: db "  '--'.     /|   | |--'  \   \  / \   \  /:   : :    :   :    / '--'.     / ",13,10
-snoopos_msg_b: db "    `--'---' |   |/       `----'   `----' |   | :     \   \ .'    `--'---'  ",13,10
-snoopos_msg_c: db "             '---'                        `---'.|      `---`                ",13,10
-snoopos_msg_d: db "                                           `---`                           ",13,10,0
+snoopos_msg_0: db "                                                        ,----..",13,10
+snoopos_msg_1: db "     .--.--.                                           /   /   \   .--.--.",13,10
+snoopos_msg_2: db "    /  /    '.                             ,-.----.   /   .     : /  /    '.",13,10
+snoopos_msg_3: db "   |  :  /`. /      ,---,   ,---.    ,---. \    /  \ .   /   :.  |  :  /`. /",13,10
+snoopos_msg_4: db "   :  |  |--`   ,-+-. /  | '   ,'\  '   ,'\|   :    .   :   /  ` :  |  |--`",13,10
+snoopos_msg_5: db "   |  :  :_    ,--.'|'   |/   /   |/   /   |   | .\ :   |  : \ : |  :  :_",13,10
+snoopos_msg_6: db "    \  \    `.|   |  ,'' .   : ,. .   : ,. .   : |: |   :  | : | '\  \    `.",13,10
+snoopos_msg_7: db "     `----.   |   | /  | '   | |: '   | |: |   |  \ .   |  ' ' ' : `----.   \",13,10
+snoopos_msg_8: db "     __ \  \  |   | |  | '   | .: '   | .: |   : .  '   :  \: /  | __ \  \  |",13,10
+snoopos_msg_9: db "    /  /`--'  |   | |  |/|   :    |   :    :     |`-'\   \  ',  / /  /`--'  /",13,10
+snoopos_msg_a: db "   '--'.     /|   | |--'  \   \  / \   \  /:   : :    :   :    / '--'.     /",13,10
+snoopos_msg_b: db "     `--'---' |   |/       `----'   `----' |   | :     \   \ .'    `--'---'",13,10
+snoopos_msg_c: db "              '---'                        `---'.|      `---`",13,10
+snoopos_msg_d: db "                                            `---`",13,10,0
 snoopos_msg: db "SnoopOS Version ",SNOOPOS_VERSION," :3",0 ; 25 chars /2 12 chars 40-12 28
 potato_credit: db "OS made by NicePotato                                  An OS made for Snoopie <3",0
+
 enter_message: db "Searching for AUTOEXEC",0 ; 21 chars /2 11 40-11 29
+load_message: db " Loading AUTOEXEC...  ",0 ; 19 /2
 error_no_auto: db "RIP OS, where is AUTOEXEC???",0 ; 27 chars /2 13 40-13 27
 debug_str: db "OK",0
 
-autorun_bin_name: db "AUTORUN.BIN",0
+autoexec_bin_name: db "AUTOEXEC.BIN",0
 
 ;------------------------------------------------
 ;Variables

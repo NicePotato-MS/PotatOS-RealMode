@@ -55,7 +55,7 @@ echo Please Wait...
 imdisk -a -f images\snoopos.flp -s 1440K -m B:
 
 copy binaries\kernel.bin B:\
-::copy binaries\programs\*.bin B:\
+copy binaries\programs\*.bin B:\
 
 
 imdisk -D -m B:

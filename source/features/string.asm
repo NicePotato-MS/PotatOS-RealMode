@@ -257,10 +257,10 @@ os_string_join:
 
 
 ; ------------------------------------------------------------------
-; os_string_chomp -- Strip leading and trailing spaces from a string
+; os_string_trim -- Strip leading and trailing spaces from a string
 ; IN: AX = string location
 
-os_string_chomp:
+os_string_trim:
 	pusha
 
 	mov dx, ax			; Save string location
@@ -474,11 +474,11 @@ os_string_parse:
 
 
 ; ------------------------------------------------------------------
-; os_string_to_int -- Convert decimal string to integer value
+; os_string_to_uint -- Convert decimal string to integer value
 ; IN: SI = string location (max 5 chars, up to '65536')
 ; OUT: AX = number
 
-os_string_to_int:
+os_string_to_uint:
 	pusha
 
 	mov ax, si			; First, get length of string
@@ -535,11 +535,11 @@ os_string_to_int:
 
 
 ; ------------------------------------------------------------------
-; os_int_to_string -- Convert unsigned integer to string
+; os_uint_to_string -- Convert unsigned integer to string
 ; IN: AX = signed int
 ; OUT: AX = string location
 
-os_int_to_string:
+os_uint_to_string:
 	pusha
 
 	mov cx, 0
@@ -616,11 +616,11 @@ os_sint_to_string:
 
 
 ; ------------------------------------------------------------------
-; os_long_int_to_string -- Convert value in DX:AX to string
+; os_long_uint_to_string -- Convert value in DX:AX to string
 ; IN: DX:AX = long unsigned integer, BX = number base, DI = string location
 ; OUT: DI = location of converted string
 
-os_long_int_to_string:
+os_long_uint_to_string:
 	pusha
 
 	mov si, di			; Prepare for later data movement

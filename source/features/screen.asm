@@ -14,7 +14,10 @@ os_cursor_on:
     popa
     ret
 
-os_print_string:			; Output string in SI to screen
+os_printc:
+    call os_set_cursor_pos
+
+os_print:			; Output string in SI to screen
 	pusha
 
 	mov ah, 0Eh				; int 10h teletype function
@@ -54,17 +57,54 @@ os_clear_screen:
 	ret
 
 ; Inputs
-; bl - Color
-; dh - Red
-; ch - Green
-; cl - Blue
+; bx - Color
+; dh - Red (0-63)
+; ch - Green (0-63)
+; cl - Blue (0-63)
 os_change_palette_color:
     push ax
-    mov bh,0
-    mov ax, 10h
+    mov ax, 1010h
     int 10h ; Video
     pop ax
     ret
+
+os_reset_palette:
+    pusha
+    mov bx, 0
+    mov si, ENUM_default_colors
+.reset_palette_loop:
+    mov dh, byte [si]
+    mov ch, byte [si+1]
+    mov cl, byte [si+2]
+    call os_change_palette_color
+    add si, 3
+    inc bx
+    cmp bx, 16
+    jne .reset_palette_loop
+    popa
+    ret
+
+
+ENUM_default_colors:
+    db 0, 0, 0          ; Color 0: Black
+    db 0, 0, 42         ; Color 1: Blue
+    db 0, 42, 0         ; Color 2: Green
+    db 0, 42, 42        ; Color 3: Cyan
+    db 42, 0, 0         ; Color 4: Red
+    db 42, 0, 42        ; Color 5: Magenta
+    db 42, 21, 0        ; Color 6: Brown
+    db 42, 42, 42       ; Color 7: Light Gray
+    db 21, 21, 21       ; Color 8: Dark Gray
+    db 21, 21, 63       ; Color 9: Light Blue
+    db 21, 63, 21       ; Color 10: Light Green
+    db 21, 63, 63       ; Color 11: Light Cyan
+    db 63, 21, 21       ; Color 12: Light Red
+    db 63, 21, 63       ; Color 13: Light Magenta
+    db 63, 63, 21       ; Color 14: Yellow
+    db 63, 63, 63       ; Color 15: White
+
+
+
 
 ; Inputs:
 ; al - character
