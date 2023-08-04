@@ -1018,33 +1018,4 @@ os_get_date_string:
 	.months db 'Jan.Feb.Mar.Apr.May JuneJulyAug.SeptOct.Nov.Dec.'
 
 
-; ------------------------------------------------------------------
-; os_string_tokenize -- Reads tokens separated by specified char from
-; a string. Returns pointer to next token, or 0 if none left
-; IN: AL = separator char, SI = beginning; OUT: DI = next token or 0 if none
-
-os_string_tokenize:
-	push si
-
-.next_char:
-	cmp byte [si], al
-	je .return_token
-	cmp byte [si], 0
-	jz .no_more
-	inc si
-	jmp .next_char
-
-.return_token:
-	mov byte [si], 0
-	inc si
-	mov di, si
-	pop si
-	ret
-
-.no_more:
-	mov di, 0
-	pop si
-	ret
-
-
-; ==================================================================
+os_string_get_section:

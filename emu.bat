@@ -1,1 +1,2 @@
-qemu-system-i386 -m 1M -drive file=qemu/HDD.img,index=0,media=disk,format=raw -soundhw pcspk
+@echo off
+emu-installer.bat

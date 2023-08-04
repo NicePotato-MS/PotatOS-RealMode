@@ -1,11 +1,13 @@
 BITS 16
 CPU 386
 
-%DEFINE SNOOPOS_VERSION '0.1.00'
+%DEFINE POTATOS_VERSION '0.1.00'
 %DEFINE API_VERSION 1
 
-disk_buffer	equ	0x6000
-autoexec_load_addr equ 0x5000
+program_load_addr               equ 0x8000
+disk_buffer	                    equ	0x6000
+exit_addr                       equ 0x4800
+autoexec_load_addr              equ 0x4000
 
 ; another thanks to MikeOS for some of this
 
@@ -40,13 +42,21 @@ jmp os_string_trim              ;004Eh
 jmp os_string_strip             ;0051h
 jmp os_string_compare           ;0054h
 jmp os_string_truncate          ;0057h
-jmp os_string_strincmp          ;0060h
-jmp os_string_parse             ;0063h
-jmp os_string_to_uint           ;0066h
-jmp os_uint_to_string           ;0069h
-jmp os_sint_to_string           ;006Ch
-jmp os_long_uint_to_string      ;006Fh
-jmp os_find_char_in_string      ;0072h
+jmp os_string_strincmp          ;005Ah
+jmp os_string_parse             ;005Dh
+jmp os_string_to_uint           ;0060h
+jmp os_uint_to_string           ;0063h
+jmp os_sint_to_string           ;0066h
+jmp os_long_uint_to_string      ;0069h
+jmp os_find_char_in_string      ;006Ch
+jmp $                           ;006Fh
+jmp os_load_file_and_execute    ;0072h
+jmp os_string_get_section       ;0075h
+jmp os_kernel_panic             ;0078h
+jmp ENUM_default_colors         ;007Bh
+
+
+
 
 os_start:
     ; Setup stack
@@ -56,6 +66,7 @@ os_start:
     mov sp, 0x0FFFF
     sti
 
+    ; Clear direction flag
     cld
 
     mov ax, 1000h       ; Set segment to 1000h
@@ -79,40 +90,14 @@ os_start:
 
 no_change:
 
-    mov ax, 1003h			; Set text output with certain attributes
-	mov bx, 0			; to be bright, and not blinking
+    mov ax, 1003h	; Set text output to be bright, and not blinking
+	mov bx, 0
 	int 10h
 
 	call os_cursor_off
-	
-    mov bx, 0x05	;color
-	mov dh, 56	;red
-	mov ch, 19	;green
-	mov cl, 63	;blue
-	call os_change_palette_color
 
-    mov bh, 0x5f ; Background color
+    mov bh, 0x0f ; Background color
 	call os_clear_screen
-
-	mov dh, 1       ; row
-	mov dl, 0       ; column
-    mov si, snoopos_msg_0
-    call os_printc
-
-	mov dh, 15       ; row
-	mov dl, 28       ; column
-    mov si, snoopos_msg
-    call os_printc
-
-    mov dh, 24       ; row
-	mov dl, 0       ; column
-    mov si, potato_credit
-    call os_printc
-
-    mov dh, 19 ; row
-    mov dl, 29 ; column
-    mov si, enter_message
-    call os_printc
 
     ; Search for AUTOEXEC.BIN
     mov ax, autoexec_bin_name
@@ -126,41 +111,14 @@ no_change:
     call os_printc
 
     mov cx, autoexec_load_addr
-    call os_load_file
-
-    ; Jump to it now, buh bye!
-    jmp autoexec_load_addr
+    jmp os_load_file_and_execute
 
 no_autoexec:
-    ; Hang forever because I am too lazy to implement proper error handling
-
-    mov dh, 19
-    mov dl, 27
-    mov si, error_no_auto
-    call os_printc
-
-    jmp $
+    mov ax, error_no_auto
+    jmp os_kernel_panic
 	
-
-
-
-
-snoopos_msg_0: db "                                                        ,----..",13,10
-snoopos_msg_1: db "     .--.--.                                           /   /   \   .--.--.",13,10
-snoopos_msg_2: db "    /  /    '.                             ,-.----.   /   .     : /  /    '.",13,10
-snoopos_msg_3: db "   |  :  /`. /      ,---,   ,---.    ,---. \    /  \ .   /   :.  |  :  /`. /",13,10
-snoopos_msg_4: db "   :  |  |--`   ,-+-. /  | '   ,'\  '   ,'\|   :    .   :   /  ` :  |  |--`",13,10
-snoopos_msg_5: db "   |  :  :_    ,--.'|'   |/   /   |/   /   |   | .\ :   |  : \ : |  :  :_",13,10
-snoopos_msg_6: db "    \  \    `.|   |  ,'' .   : ,. .   : ,. .   : |: |   :  | : | '\  \    `.",13,10
-snoopos_msg_7: db "     `----.   |   | /  | '   | |: '   | |: |   |  \ .   |  ' ' ' : `----.   \",13,10
-snoopos_msg_8: db "     __ \  \  |   | |  | '   | .: '   | .: |   : .  '   :  \: /  | __ \  \  |",13,10
-snoopos_msg_9: db "    /  /`--'  |   | |  |/|   :    |   :    :     |`-'\   \  ',  / /  /`--'  /",13,10
-snoopos_msg_a: db "   '--'.     /|   | |--'  \   \  / \   \  /:   : :    :   :    / '--'.     /",13,10
-snoopos_msg_b: db "     `--'---' |   |/       `----'   `----' |   | :     \   \ .'    `--'---'",13,10
-snoopos_msg_c: db "              '---'                        `---'.|      `---`",13,10
-snoopos_msg_d: db "                                            `---`",13,10,0
-snoopos_msg: db "SnoopOS Version ",SNOOPOS_VERSION," :3",0 ; 25 chars /2 12 chars 40-12 28
-potato_credit: db "OS made by NicePotato                                  An OS made for Snoopie <3",0
+potatos_msg: db "PotatOS Version ",POTATOS_VERSION,0 ; 25 chars /2 12 chars 40-12 28
+potato_credit: db "OS made by NicePotato",0
 
 enter_message: db "Searching for AUTOEXEC",0 ; 21 chars /2 11 40-11 29
 load_message: db " Loading AUTOEXEC...  ",0 ; 19 /2
@@ -183,6 +141,6 @@ fmt_date	db 0, '/'	; 0, 1, 2 = M/D/Y, D/M/Y or Y/M/D
 
 %INCLUDE "source/features/screen.asm"
 %INCLUDE "source/features/misc.asm"
-%INCLUDE "source/features/disk.asm"
+%INCLUDE "source/features/mikedisk.asm"
 %INCLUDE "source/features/string.asm"
 %INCLUDE "source/features/math.asm"

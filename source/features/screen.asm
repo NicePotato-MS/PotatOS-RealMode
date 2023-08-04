@@ -1,3 +1,21 @@
+ENUM_default_colors:
+    db 0, 0, 0                  ;Color 0: Black
+    db 0, 0, 42                 ;Color 1: Blue
+    db 0, 42, 0                 ;Color 2: Green
+    db 0, 42, 42                ;Color 3: Cyan
+    db 42, 0, 0                 ;Color 4: Red
+    db 42, 0, 42                ;Color 5: Magenta
+    db 42, 21, 0                ;Color 6: Brown
+    db 42, 42, 42               ;Color 7: Light Gray
+    db 21, 21, 21               ;Color 8: Dark Gray
+    db 21, 21, 63               ;Color 9: Light Blue
+    db 21, 63, 21               ;Color 10: Light Green
+    db 21, 63, 63               ;Color 11: Light Cyan
+    db 63, 21, 21               ;Color 12: Light Red
+    db 63, 21, 63               ;Color 13: Light Magenta
+    db 63, 63, 21               ;Color 14: Yellow
+    db 63, 63, 63               ;Color 15: White
+
 os_cursor_off:
     pusha
     mov ah, 0x01
@@ -83,27 +101,6 @@ os_reset_palette:
     jne .reset_palette_loop
     popa
     ret
-
-
-ENUM_default_colors:
-    db 0, 0, 0          ; Color 0: Black
-    db 0, 0, 42         ; Color 1: Blue
-    db 0, 42, 0         ; Color 2: Green
-    db 0, 42, 42        ; Color 3: Cyan
-    db 42, 0, 0         ; Color 4: Red
-    db 42, 0, 42        ; Color 5: Magenta
-    db 42, 21, 0        ; Color 6: Brown
-    db 42, 42, 42       ; Color 7: Light Gray
-    db 21, 21, 21       ; Color 8: Dark Gray
-    db 21, 21, 63       ; Color 9: Light Blue
-    db 21, 63, 21       ; Color 10: Light Green
-    db 21, 63, 63       ; Color 11: Light Cyan
-    db 63, 21, 21       ; Color 12: Light Red
-    db 63, 21, 63       ; Color 13: Light Magenta
-    db 63, 63, 21       ; Color 14: Yellow
-    db 63, 63, 63       ; Color 15: White
-
-
 
 
 ; Inputs:

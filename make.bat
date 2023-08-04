@@ -48,11 +48,11 @@ goto :choice2
 :yes2
 
 cd images
-dd count=2 seek=0 bs=512 if=..\binaries\mbr.bin of=.\snoopos.flp
+dd count=2 seek=0 bs=512 if=..\binaries\mbr.bin of=.\potatos.flp
 cd ..
 
 echo Please Wait...
-imdisk -a -f images\snoopos.flp -s 1440K -m B:
+imdisk -a -f images\potatos.flp -s 1440K -m B:
 
 copy binaries\kernel.bin B:\
 copy binaries\programs\*.bin B:\
