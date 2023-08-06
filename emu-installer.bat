@@ -1,1 +1,1 @@
-qemu-system-i386 -m 128M -drive file=qemu/HDD.img,index=0,media=disk,format=raw -drive file=images/snoopos.flp,index=0,if=floppy,format=raw -soundhw pcspk
+qemu-system-i386 -m 128M -drive file=qemu/HDD.img,index=0,media=disk,format=raw -drive file=images/potatos.flp,index=0,if=floppy,format=raw -soundhw pcspk

@@ -1,0 +1,25 @@
+{
+  "name": "frenchfries",
+  "displayName": "FrenchFries",
+  "description": "Syntax Highlighting for the FrenchFries programming language",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.81.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [{
+      "id": "frenchfries",
+      "aliases": ["FrenchFries", "frenchfries"],
+      "extensions": [".frfr"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "frenchfries",
+      "scopeName": "source.frenchfries",
+      "path": "./syntaxes/frenchfries.tmLanguage.json"
+    }]
+  }
+}

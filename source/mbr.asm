@@ -5,7 +5,7 @@ nop
 
 ;Thanks to MikeOS for most (almost all) of the code here.		hehe, copy+paste go brrrr
 
-OEMLabel		db "SNOSBOOT"	; Disk label
+OEMLabel		db "POTATOSS"	; Disk label
 BytesPerSector		dw 512		; Bytes per sector
 SectorsPerCluster	db 1		; Sectors per cluster
 ReservedForBoot		dw 1		; Reserved sectors for boot record

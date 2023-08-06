@@ -1,11 +1,15 @@
 -- Lua and C like syntax
 
 -- Constants
--- 'true' is 1
--- 'false' is 0
--- 'FFCNST_PRG_SIZE' is the size of the program in bytes, dependent on compile settings
+-- true - 1
+-- false - 0
+-- FFCNST_PRG_SIZE - the size of the program in bytes, dependent on compile settings
+
+-- Constant Defs
+-- FFDEF_PLATFORM - the platform being compiled to. Is string "x86" for x86
 
 -- Hex values are converted to regular numbers at compile time
+
 
 
 -- Variables
@@ -34,7 +38,6 @@ byte > byteVar1 = 98
 
 -- You can get a pointer to a value by putting '*' in front
 qword pointerVal = *byteVar2
-
 -- You can declare something as an array by tagging [] onto it. Works for byte, word, dword, and qword
 byte[] byteArray1 = {10,20,30,40,50}
 word[] wordArray1 = {1372,257,890,102}
@@ -46,7 +49,6 @@ byte[32] byteArray2 = {50,40,30,20,10} -- 32 bytes
 word[32] wordArray2 = {982,742,164,473} -- 32 words, 64 bytes
 -- You can put characters into arrays
 byte[] charArray = "Hello, chars!" -- Note, there is no null byte at the end
-
 -- Strings are slightly different than byte arrays as they add a null byte automatically.
 -- Otherwise, they are identical
 string stringVar1 = "Hello, world!" -- is actually "Hello, world!\0"
@@ -56,7 +58,6 @@ string isAString = "String" -- is actually "String\0"
 -- You can also tag on a [] but do be aware you need to leave room for the null byte
 string[6] helloString = "hello" -- 6 bytes in total 'h','e','l','l','o','\0'
 -- string[5] helloString = "hello" -- would cause a compilation error
-
 
 -- Conditionals
 -- Code will run inside of a conditional statement as long as the value isn't 0 if no operand is present
@@ -136,6 +137,15 @@ if true and true and true -- Same as before, these are checked sequentially
     -- This code will run
 end
 
+while true do -- Condition is checked BEFORE executing, not after!
+
+end
+
+word i
+
+for i=0,10 do
+
+end
 
 function exampleFunction()
 
