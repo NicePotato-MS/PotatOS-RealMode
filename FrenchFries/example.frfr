@@ -10,7 +10,11 @@
 
 -- Hex values are converted to regular numbers at compile time
 
-
+-- Compile options
+-- #suppress code - suppress a warning. replace code with option below
+-- -- size_overflow - warning when something you input doesn't fit. see below
+-- -- -- byte ? = 565 (number too big) 
+-- -- -- byte[2] ? = {12,43,42} (too many values)
 
 -- Variables
 -- Variables can have letters of any case, numbers and hyphens. They cannot start with numbers.
@@ -36,6 +40,13 @@ byte > 0xC000 = 98
 -- You can use variables here
 byte > byteVar1 = 98
 
+-- You can increment/decrement a variable like this
+wordVar1+= -- Increment by 1
+wordVar1-= -- Decrement by 1
+wordVar1+= 5 -- Increment by 5
+wordVar1-= 5 -- Decrement by 5
+
+
 -- You can get a pointer to a value by putting '*' in front
 qword pointerVal = *byteVar2
 -- You can declare something as an array by tagging [] onto it. Works for byte, word, dword, and qword
@@ -57,7 +68,7 @@ byte[] notAString = "String" -- is actually "String"
 string isAString = "String" -- is actually "String\0"
 -- You can also tag on a [] but do be aware you need to leave room for the null byte
 string[6] helloString = "hello" -- 6 bytes in total 'h','e','l','l','o','\0'
--- string[5] helloString = "hello" -- would cause a compilation error
+-- string[5] helloString = "hello" -- would cause a size_overflow warning
 
 -- Conditionals
 -- Code will run inside of a conditional statement as long as the value isn't 0 if no operand is present

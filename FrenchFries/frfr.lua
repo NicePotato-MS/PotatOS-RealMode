@@ -1,6 +1,6 @@
 --[[
 
-FrenchFries Programming Language Compiler
+FrenchFries Programming Language
 
 Made by NicePotato
 
